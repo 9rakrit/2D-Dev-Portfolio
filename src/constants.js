@@ -19,8 +19,7 @@ Discipline, iteration, and experimentation drive my development process — refi
 
 resume: `You found my resume.
 
-<a href="/Prakrit_Mohanty_Resume_Latest.pdf" target="_blank">
-Download Resume</a>
+Download Resume(click close then download)
 
 email:mohanty.prakrit@gmail.com, 
 Lets build something impactful.`,

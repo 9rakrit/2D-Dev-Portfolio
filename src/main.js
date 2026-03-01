@@ -32,7 +32,6 @@ k.loadSprite("spritesheet", "./spritesheet.png", {
 k.loadSprite("map", "./map.png");
 
 // ---------------- SOUNDS ----------------
-// ⚠ NO LEADING SLASH
 k.loadSound("introMusic", "08 - Shop.mp3");
 k.loadSound("gameMusic", "03 - Definitely Our Town.mp3");
 
@@ -42,8 +41,6 @@ k.setBackground(k.Color.fromHex("#000000"));
 // INTRO SCENE
 // =====================================================
 k.scene("intro", () => {
-
-  let introTrack;
 
   k.add([
     k.text("PRAKRIT MOHANTY", { size: 36, font: "monogram" }),
@@ -75,21 +72,67 @@ k.scene("intro", () => {
 
   k.onKeyPress("enter", async () => {
 
-    // Ensure audio context unlocked
     if (k.audioCtx && k.audioCtx.state !== "running") {
       await k.audioCtx.resume();
     }
 
-    introTrack = k.play("introMusic", {
+    const introTrack = k.play("introMusic", {
       loop: true,
       volume: 0.5,
     });
 
     k.wait(0.25, () => {
       introTrack.stop();
-      k.go("main");
+      k.go("story");
     });
   });
+});
+
+k.scene("story", () => {
+
+  let fullText = 
+`Initializing portfolio...
+
+Hi, I'm Prakrit — Software Engineer.
+
+I design intelligent systems
+and build interactive digital experiences.
+
+Instead of a static resume,
+I created this world to showcase my work.
+
+Walk around.
+Explore.
+Discover.`;
+
+  let displayedText = "";
+  let index = 0;
+
+  const textObj = k.add([
+    k.text("", {
+      size: 22,
+      font: "monogram",
+      width: k.width() - 100,
+    }),
+    k.pos(50, k.height() / 2 - 100),
+  ]);
+
+  // Typing animation
+  const typing = k.loop(0.03, () => {
+    if (index < fullText.length) {
+      displayedText += fullText[index];
+      textObj.text = displayedText;
+      index++;
+    } else {
+      typing.cancel();
+
+      // Wait 2 seconds then fade to game
+      k.wait(2, () => {
+        k.go("main");
+      });
+    }
+  });
+
 });
 
 // =====================================================
@@ -97,12 +140,11 @@ k.scene("intro", () => {
 // =====================================================
 k.scene("main", async () => {
 
-  // Ensure audio context running
   if (k.audioCtx && k.audioCtx.state !== "running") {
     await k.audioCtx.resume();
   }
 
-  const gameTrack = k.play("gameMusic", {
+  k.play("gameMusic", {
     loop: true,
     volume: 0.4,
   });
@@ -129,13 +171,13 @@ k.scene("main", async () => {
       speed: 250,
       direction: "down",
       isInDialogue: false,
-      canOpenResume: false,
     },
     "player",
   ]);
 
   for (const layer of layers) {
 
+    // COLLISIONS
     if (layer.name === "collisions") {
       for (const obj of layer.objects) {
         map.add([
@@ -148,8 +190,10 @@ k.scene("main", async () => {
       }
     }
 
+    // INTERACTABLES
     if (layer.name === "interactables") {
       for (const obj of layer.objects) {
+
         map.add([
           k.area({
             shape: new k.Rect(k.vec2(0), obj.width, obj.height),
@@ -161,33 +205,73 @@ k.scene("main", async () => {
 
         player.onCollide(obj.name, () => {
 
+          if (player.isInDialogue) return;
           if (!dialogueData[obj.name]) return;
 
           player.isInDialogue = true;
 
+          // ===== RESUME SPECIAL CASE =====
           if (obj.name === "resume") {
 
             displayDialogue(
               dialogueData.resume,
               () => {
                 player.isInDialogue = false;
-                player.canOpenResume = true;
+
+                const btn = document.createElement("button");
+                btn.innerText = "Download Resume";
+                btn.style.position = "absolute";
+                btn.style.bottom = "40px";
+                btn.style.left = "50%";
+                btn.style.transform = "translateX(-50%)";
+                btn.style.padding = "10px 20px";
+                btn.style.background = "#222";
+                btn.style.color = "#fff";
+                btn.style.border = "2px solid white";
+                btn.style.cursor = "pointer";
+                btn.style.fontFamily = "monogram";
+
+                document.body.appendChild(btn);
+
+                btn.onclick = async () => {
+                  try {
+                    const response = await fetch("./Prakrit_Mohanty_Resume_Latest.pdf");
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "Prakrit_Mohanty_Resume_Latest.pdf";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    window.URL.revokeObjectURL(url);
+                  } catch (err) {
+                    console.error(err);
+                  }
+
+                  document.body.removeChild(btn);
+                };
               }
             );
 
-          } else {
-
-            displayDialogue(
-              dialogueData[obj.name],
-              () => (player.isInDialogue = false)
-            );
-
+            return;
           }
+
+          // ===== NORMAL OBJECTS =====
+          displayDialogue(
+            dialogueData[obj.name],
+            () => {
+              player.isInDialogue = false;
+            }
+          );
 
         });
       }
     }
 
+    // SPAWN
     if (layer.name === "spawnpoint") {
       const spawn = layer.objects[0];
       player.pos = k.vec2(
@@ -198,19 +282,6 @@ k.scene("main", async () => {
     }
   }
 
-  // Resume open (LOCAL FILE — NO GITHUB)
-  k.onKeyPress("e", () => {
-    if (player.canOpenResume) {
-
-      window.open(
-        "./Prakrit_Mohanty_Resume_Latest.pdf",
-        "_blank"
-      );
-
-      player.canOpenResume = false;
-    }
-  });
-
   setCamScale(k);
   k.onResize(() => setCamScale(k));
 
@@ -218,6 +289,7 @@ k.scene("main", async () => {
     k.camPos(player.worldPos().x, player.worldPos().y - 100);
   });
 
+  // MOVEMENT
   k.onKeyDown(() => {
     if (player.isInDialogue) return;
 
