@@ -2,6 +2,7 @@ import { dialogueData, scaleFactor } from "./constants";
 import { k } from "./kaboomCtx";
 import { displayDialogue, setCamScale } from "./utils";
 
+// ---------------- SPRITES ----------------
 k.loadSprite("spritesheet", "./spritesheet.png", {
   sliceX: 39,
   sliceY: 31,
@@ -17,9 +18,65 @@ k.loadSprite("spritesheet", "./spritesheet.png", {
 
 k.loadSprite("map", "./map.png");
 
+// ---------------- SOUNDS ----------------
+k.loadSound("introMusic", "/08 - Shop.mp3");
+k.loadSound("gameMusic", "/03 - Definitely Our Town.mp3");
+
 k.setBackground(k.Color.fromHex("#000000"));
 
+// ---------------- INTRO SCENE ----------------
+k.scene("intro", () => {
+
+  const title = k.add([
+    k.text("PRAKRIT MOHANTY", { size: 36, font: "monogram" }),
+    k.pos(k.width() / 2, k.height() / 2 - 60),
+    k.anchor("center"),
+  ]);
+
+  const subtitle = k.add([
+    k.text("Interactive Developer Portfolio", {
+      size: 18,
+      font: "monogram",
+    }),
+    k.pos(k.width() / 2, k.height() / 2 - 20),
+    k.anchor("center"),
+  ]);
+
+  const startText = k.add([
+    k.text("Press ENTER to Start", {
+      size: 20,
+      font: "monogram",
+    }),
+    k.pos(k.width() / 2, k.height() / 2 + 40),
+    k.anchor("center"),
+  ]);
+
+  // Blinking
+  k.loop(0.6, () => {
+    startText.hidden = !startText.hidden;
+  });
+
+  // Play intro music
+  const introTrack = k.play("introMusic", {
+    loop: true,
+    volume: 0.5,
+  });
+
+  k.onKeyPress("enter", () => {
+    introTrack.stop();
+    k.go("main");
+  });
+});
+
+// ---------------- MAIN SCENE ----------------
 k.scene("main", async () => {
+
+  // Play main game music
+  const gameTrack = k.play("gameMusic", {
+    loop: true,
+    volume: 0.4,
+  });
+
   const mapData = await (await fetch("./map.json")).json();
   const layers = mapData.layers;
 
@@ -48,52 +105,49 @@ k.scene("main", async () => {
 
   for (const layer of layers) {
 
-    // Collisions
     if (layer.name === "collisions") {
-  for (const obj of layer.objects) {
-    map.add([
-      k.area({
-        shape: new k.Rect(
-          k.vec2(0),
-          obj.width,
-          obj.height
-        ),
-      }),
-      k.body({ isStatic: true }),
-      k.pos(obj.x, obj.y),
-    ]);
-  }
-}
+      for (const obj of layer.objects) {
+        map.add([
+          k.area({
+            shape: new k.Rect(
+              k.vec2(0),
+              obj.width,
+              obj.height
+            ),
+          }),
+          k.body({ isStatic: true }),
+          k.pos(obj.x, obj.y),
+        ]);
+      }
+    }
 
-    // Interactables
     if (layer.name === "interactables") {
-  for (const obj of layer.objects) {
-    map.add([
-      k.area({
-        shape: new k.Rect(
-          k.vec2(0),
-          obj.width,
-          obj.height
-        ),
-      }),
-      k.body({ isStatic: true }),
-      k.pos(obj.x, obj.y),
-      obj.name,
-    ]);
+      for (const obj of layer.objects) {
+        map.add([
+          k.area({
+            shape: new k.Rect(
+              k.vec2(0),
+              obj.width,
+              obj.height
+            ),
+          }),
+          k.body({ isStatic: true }),
+          k.pos(obj.x, obj.y),
+          obj.name,
+        ]);
 
-    player.onCollide(obj.name, () => {
-      if (!dialogueData[obj.name]) return;
+        player.onCollide(obj.name, () => {
+          if (!dialogueData[obj.name]) return;
 
-      player.isInDialogue = true;
-      displayDialogue(
-        dialogueData[obj.name],
-        () => (player.isInDialogue = false)
-      );
-    });
-  }
-}
+          player.isInDialogue = true;
+          displayDialogue(
+            dialogueData[obj.name],
+            () => (player.isInDialogue = false)
+          );
+        });
+      }
+    }
 
-    // Spawn
     if (layer.name === "spawnpoint") {
       const spawn = layer.objects[0];
       player.pos = k.vec2(
@@ -104,7 +158,6 @@ k.scene("main", async () => {
     }
   }
 
-  // Camera
   setCamScale(k);
   k.onResize(() => setCamScale(k));
 
@@ -112,7 +165,7 @@ k.scene("main", async () => {
     k.camPos(player.worldPos().x, player.worldPos().y - 100);
   });
 
-  // ✅ KEYBOARD MOVEMENT RESTORED
+  // MOVEMENT
   k.onKeyDown(() => {
     if (player.isInDialogue) return;
 
@@ -150,4 +203,4 @@ k.scene("main", async () => {
   });
 });
 
-k.go("main");
+k.go("intro");
