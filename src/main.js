@@ -2,6 +2,19 @@ import { dialogueData, scaleFactor } from "./constants";
 import { k } from "./kaboomCtx";
 import { displayDialogue, setCamScale } from "./utils";
 
+// ================= AUDIO UNLOCK (ITCH FIX) =================
+window.addEventListener("click", async () => {
+  if (k.audioCtx && k.audioCtx.state !== "running") {
+    await k.audioCtx.resume();
+  }
+});
+
+window.addEventListener("keydown", async () => {
+  if (k.audioCtx && k.audioCtx.state !== "running") {
+    await k.audioCtx.resume();
+  }
+});
+
 // ---------------- SPRITES ----------------
 k.loadSprite("spritesheet", "./spritesheet.png", {
   sliceX: 39,
@@ -19,21 +32,26 @@ k.loadSprite("spritesheet", "./spritesheet.png", {
 k.loadSprite("map", "./map.png");
 
 // ---------------- SOUNDS ----------------
-k.loadSound("introMusic", "/08 - Shop.mp3");
-k.loadSound("gameMusic", "/03 - Definitely Our Town.mp3");
+// ⚠ NO LEADING SLASH
+k.loadSound("introMusic", "08 - Shop.mp3");
+k.loadSound("gameMusic", "03 - Definitely Our Town.mp3");
 
 k.setBackground(k.Color.fromHex("#000000"));
 
-// ---------------- INTRO SCENE ----------------
+// =====================================================
+// INTRO SCENE
+// =====================================================
 k.scene("intro", () => {
 
-  const title = k.add([
+  let introTrack;
+
+  k.add([
     k.text("PRAKRIT MOHANTY", { size: 36, font: "monogram" }),
     k.pos(k.width() / 2, k.height() / 2 - 60),
     k.anchor("center"),
   ]);
 
-  const subtitle = k.add([
+  k.add([
     k.text("Interactive Developer Portfolio", {
       size: 18,
       font: "monogram",
@@ -51,27 +69,39 @@ k.scene("intro", () => {
     k.anchor("center"),
   ]);
 
-  // Blinking
   k.loop(0.6, () => {
     startText.hidden = !startText.hidden;
   });
 
-  // Play intro music
-  const introTrack = k.play("introMusic", {
-    loop: true,
-    volume: 0.5,
-  });
+  k.onKeyPress("enter", async () => {
 
-  k.onKeyPress("enter", () => {
-    introTrack.stop();
-    k.go("main");
+    // Ensure audio context unlocked
+    if (k.audioCtx && k.audioCtx.state !== "running") {
+      await k.audioCtx.resume();
+    }
+
+    introTrack = k.play("introMusic", {
+      loop: true,
+      volume: 0.5,
+    });
+
+    k.wait(0.25, () => {
+      introTrack.stop();
+      k.go("main");
+    });
   });
 });
 
-// ---------------- MAIN SCENE ----------------
+// =====================================================
+// MAIN SCENE
+// =====================================================
 k.scene("main", async () => {
 
-  // Play main game music
+  // Ensure audio context running
+  if (k.audioCtx && k.audioCtx.state !== "running") {
+    await k.audioCtx.resume();
+  }
+
   const gameTrack = k.play("gameMusic", {
     loop: true,
     volume: 0.4,
@@ -99,6 +129,7 @@ k.scene("main", async () => {
       speed: 250,
       direction: "down",
       isInDialogue: false,
+      canOpenResume: false,
     },
     "player",
   ]);
@@ -109,11 +140,7 @@ k.scene("main", async () => {
       for (const obj of layer.objects) {
         map.add([
           k.area({
-            shape: new k.Rect(
-              k.vec2(0),
-              obj.width,
-              obj.height
-            ),
+            shape: new k.Rect(k.vec2(0), obj.width, obj.height),
           }),
           k.body({ isStatic: true }),
           k.pos(obj.x, obj.y),
@@ -125,11 +152,7 @@ k.scene("main", async () => {
       for (const obj of layer.objects) {
         map.add([
           k.area({
-            shape: new k.Rect(
-              k.vec2(0),
-              obj.width,
-              obj.height
-            ),
+            shape: new k.Rect(k.vec2(0), obj.width, obj.height),
           }),
           k.body({ isStatic: true }),
           k.pos(obj.x, obj.y),
@@ -137,13 +160,30 @@ k.scene("main", async () => {
         ]);
 
         player.onCollide(obj.name, () => {
+
           if (!dialogueData[obj.name]) return;
 
           player.isInDialogue = true;
-          displayDialogue(
-            dialogueData[obj.name],
-            () => (player.isInDialogue = false)
-          );
+
+          if (obj.name === "resume") {
+
+            displayDialogue(
+              dialogueData.resume,
+              () => {
+                player.isInDialogue = false;
+                player.canOpenResume = true;
+              }
+            );
+
+          } else {
+
+            displayDialogue(
+              dialogueData[obj.name],
+              () => (player.isInDialogue = false)
+            );
+
+          }
+
         });
       }
     }
@@ -158,6 +198,19 @@ k.scene("main", async () => {
     }
   }
 
+  // Resume open (LOCAL FILE — NO GITHUB)
+  k.onKeyPress("e", () => {
+    if (player.canOpenResume) {
+
+      window.open(
+        "./Prakrit_Mohanty_Resume_Latest.pdf",
+        "_blank"
+      );
+
+      player.canOpenResume = false;
+    }
+  });
+
   setCamScale(k);
   k.onResize(() => setCamScale(k));
 
@@ -165,7 +218,6 @@ k.scene("main", async () => {
     k.camPos(player.worldPos().x, player.worldPos().y - 100);
   });
 
-  // MOVEMENT
   k.onKeyDown(() => {
     if (player.isInDialogue) return;
 
