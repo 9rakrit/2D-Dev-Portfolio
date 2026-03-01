@@ -67,30 +67,31 @@ k.scene("main", async () => {
 
     // Interactables
     if (layer.name === "interactables") {
-      for (const obj of layer.objects) {
-        map.add([
-          k.area({
-            shape: new k.Rect(
-              k.vec2(0),
-              obj.width * scaleFactor,
-              obj.height * scaleFactor
-            ),
-          }),
-          k.body({ isStatic: true }),
-          k.pos(obj.x * scaleFactor, obj.y * scaleFactor),
-          obj.name,
-        ]);
+  for (const obj of layer.objects) {
+    map.add([
+      k.area({
+        shape: new k.Rect(
+          k.vec2(0),
+          obj.width,
+          obj.height
+        ),
+      }),
+      k.body({ isStatic: true }),
+      k.pos(obj.x, obj.y),
+      obj.name,
+    ]);
 
-        player.onCollide(obj.name, () => {
-          if (!dialogueData[obj.name]) return;
-          player.isInDialogue = true;
-          displayDialogue(
-            dialogueData[obj.name],
-            () => (player.isInDialogue = false)
-          );
-        });
-      }
-    }
+    player.onCollide(obj.name, () => {
+      if (!dialogueData[obj.name]) return;
+
+      player.isInDialogue = true;
+      displayDialogue(
+        dialogueData[obj.name],
+        () => (player.isInDialogue = false)
+      );
+    });
+  }
+}
 
     // Spawn
     if (layer.name === "spawnpoint") {
