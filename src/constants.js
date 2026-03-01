@@ -1,48 +1,51 @@
 export const scaleFactor = 4;
 
 export const dialogueData = {
-  pc: `This is my primary development workstation. 
-  I specialize in building AI-powered and data-driven applications using C++, Java, python, and JavaScript. 
-  I have hands-on experience with Microsoft Azure, machine learning workflows, and scalable full-stack systems.`,
+  pc: `You have reached my development workstation.
 
-  "cs-degree": `My degree, a Bachelor of Engineering in Computer Science.
-  Strong foundation in data structures, algorithms, operating systems, and cloud computing.
-  I focus on applying theoretical concepts to real-world engineering problems.`,
+This is where AI-powered and data-driven systems come to life — built using C++, Java, Python, and JavaScript.
 
-  "sofa-table": `This represents my approach to problem-solving.
-  I design systems with clean architecture, scalability, and user-centric engineering in mind.
-  I value maintainable code and structured development workflows like Agile and CI/CD.`,
+From machine learning pipelines to scalable cloud architectures on Microsoft Azure, this is where ideas turn into production-ready solutions.`,
 
-  tv: `I continuously learn from technical communities and research-driven content.
-  I stay updated with AI, cloud technologies, and modern software engineering practices.`,
+"cs-degree": `Bachelor of Engineering in Computer Science.
 
-  bed: `Late-night debugging and idea execution happen here.
-  Many of my projects were built through disciplined iteration, experimentation, and performance optimization.`,
+Trained in data structures, algorithms, operating systems, and cloud computing.
 
-  resume: `You can download my resume below:
+Theory provides the blueprint — engineering turns it into reality.`,
+
+bed: `Every late-night debugging session and performance tweak happened here.
+
+Discipline, iteration, and experimentation drive my development process — refining systems until they are efficient, scalable, and reliable.`,
+
+resume: `You found my resume.
 
 <a href="/Prakrit_Mohanty_Resume_Latest.pdf" target="_blank">
 Download Resume</a>
 
-Email: mohanty.prakrit@gmail.com`,
+email:mohanty.prakrit@gmail.com, 
+Lets build something impactful.`,
 
-  projects: `Key Projects:
+projects: `Active Projects Log:
 
-• MetaArena — Steam Game Analytics & Forecasting
-Full-stack analytics platform with ML-based trend forecasting and sentiment analysis.
+• MetaArena — Steam Game Insights & Forecasting
+Live analytics, ML-driven 30-day forecasting, and sentiment analysis.
 
 • Platera — AI Recipe Generator
-Generative AI system that transforms ingredients into complete recipes with intelligent pairing logic.
+Generative AI transforming simple ingredients into structured recipes.
 
 • AI Doppelganger
-Personalized conversational AI built using prompt engineering techniques.`,
+A conversational AI system trained to simulate personalized responses.`,
 
-  library: `My technical interests include:
+library: `Knowledge Archive:
+
 • Artificial Intelligence & Generative AI  
 • Cloud Computing (Microsoft Azure Certified)  
 • Data Analytics & Machine Learning  
-• Scalable Full-Stack System Architecture`,
+• Scalable Application & System Design`,
 
-  exit: `Thank you for exploring my interactive portfolio.
-  Feel free to connect with me on LinkedIn or reach out via email.`,
+exit: `You are about to leave the portfolio world.
+
+Thank you for exploring.
+
+If you would like to collaborate, connect with me on LinkedIn or reach out via email.`
 };
