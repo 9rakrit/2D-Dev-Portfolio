@@ -2,10 +2,10 @@ export const scaleFactor = 4;
 
 export const dialogueData = {
   pc: `This is my primary development workstation. 
-  I specialize in building AI-powered and data-driven applications using Python, Java, C++, and JavaScript. 
+  I specialize in building AI-powered and data-driven applications using C++, Java, python, and JavaScript. 
   I have hands-on experience with Microsoft Azure, machine learning workflows, and scalable full-stack systems.`,
 
-  "cs-degree": `Bachelor of Engineering in Computer Science.
+  "cs-degree": `My degree, a Bachelor of Engineering in Computer Science.
   Strong foundation in data structures, algorithms, operating systems, and cloud computing.
   I focus on applying theoretical concepts to real-world engineering problems.`,
 
@@ -19,26 +19,29 @@ export const dialogueData = {
   bed: `Late-night debugging and idea execution happen here.
   Many of my projects were built through disciplined iteration, experimentation, and performance optimization.`,
 
-  resume: `You can view my full resume here:
-  <a href="https://github.com/JSlegendDev/Resume/blob/main/JSlegend%20Resume-1.pdf" target="_blank">Download Resume</a>
-  Contact: mohanty.prakrit@gmail.com`,
+  resume: `You can download my resume below:
+
+<a href="/Prakrit_Mohanty_Resume_Latest.pdf" target="_blank">
+Download Resume</a>
+
+Email: mohanty.prakrit@gmail.com`,
 
   projects: `Key Projects:
 
-  • MetaArena — Steam Game Analytics & Forecasting  
-    Full-stack analytics platform with ML-based trend forecasting and sentiment analysis.
+• MetaArena — Steam Game Analytics & Forecasting
+Full-stack analytics platform with ML-based trend forecasting and sentiment analysis.
 
-  • Platera — AI Recipe Generator  
-    Generative AI system that transforms ingredients into complete recipes with intelligent pairing logic.
+• Platera — AI Recipe Generator
+Generative AI system that transforms ingredients into complete recipes with intelligent pairing logic.
 
-  • AI Doppelganger  
-    Personalized conversational AI built using prompt engineering techniques.`,
+• AI Doppelganger
+Personalized conversational AI built using prompt engineering techniques.`,
 
   library: `My technical interests include:
-  • Artificial Intelligence & Generative AI  
-  • Cloud Computing (Microsoft Azure Certified)  
-  • Data Analytics & Machine Learning  
-  • Blockchain & FinTech Concepts`,
+• Artificial Intelligence & Generative AI  
+• Cloud Computing (Microsoft Azure Certified)  
+• Data Analytics & Machine Learning  
+• Scalable Full-Stack System Architecture`,
 
   exit: `Thank you for exploring my interactive portfolio.
   Feel free to connect with me on LinkedIn or reach out via email.`,
